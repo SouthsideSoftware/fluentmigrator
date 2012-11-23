@@ -41,7 +41,7 @@ namespace FluentMigrator.Runner.Processors.SqlServer
             this.factory = factory;
             Connection = connection;
             connection.Open();
-            BeginTransaction();
+            //BeginTransaction();
         }
 
         private static string SafeSchemaName(string schemaName)

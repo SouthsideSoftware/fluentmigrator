@@ -83,12 +83,15 @@ namespace FluentMigrator.Runner
             {
                 foreach (var version in MigrationLoader.Migrations.Keys)
                 {
+                    if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                     ApplyMigrationUp(version);
+                    if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
                 }
 
+                if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                 ApplyProfiles();
-
                 if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
+
                 VersionLoader.LoadVersionInfo();
             }
             catch (Exception)
@@ -109,9 +112,11 @@ namespace FluentMigrator.Runner
             {
                 foreach (var neededMigrationVersion in GetUpMigrationsToApply(targetVersion))
                 {
+                    if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                     ApplyMigrationUp(neededMigrationVersion);
+                    if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
                 }
-                if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
+                
                 VersionLoader.LoadVersionInfo();
             }
             catch (Exception ex)
@@ -148,10 +153,11 @@ namespace FluentMigrator.Runner
             {
                 foreach (var neededMigrationVersion in GetDownMigrationsToApply(targetVersion))
                 {
+                    if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                     ApplyMigrationDown(neededMigrationVersion);
+                    if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
                 }
 
-                if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
                 VersionLoader.LoadVersionInfo();
             }
             catch (Exception)
@@ -223,15 +229,19 @@ namespace FluentMigrator.Runner
 
                 foreach (var migrationNumber in migrations.Take(steps))
                 {
+                    if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                     ApplyMigrationDown(migrationNumber);
+                    if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
                 }
 
                 VersionLoader.LoadVersionInfo();
 
                 if (!VersionLoader.VersionInfo.AppliedMigrations().Any())
+                {
+                    if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                     VersionLoader.RemoveVersionTable();
-
-                if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
+                    if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
+                }
             }
             catch (Exception)
             {
@@ -256,16 +266,20 @@ namespace FluentMigrator.Runner
                 {
                     if (version < migrationNumber)
                     {
+                        if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                         ApplyMigrationDown(migrationNumber);
+                        if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
                     }
                 }
 
                 VersionLoader.LoadVersionInfo();
 
                 if (version == 0 && !VersionLoader.VersionInfo.AppliedMigrations().Any())
+                {
+                    if (useAutomaticTransactionManagement) { Processor.BeginTransaction(); }
                     VersionLoader.RemoveVersionTable();
-
-                if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
+                    if (useAutomaticTransactionManagement) { Processor.CommitTransaction(); }
+                }
             }
             catch (Exception)
             {
