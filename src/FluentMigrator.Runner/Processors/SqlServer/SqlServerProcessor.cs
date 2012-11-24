@@ -120,6 +120,10 @@ namespace FluentMigrator.Runner.Processors.SqlServer
         public override void BeginTransaction()
         {
             Announcer.Say("Beginning Transaction");
+            if (Connection.State == ConnectionState.Closed)
+            {
+                Connection.Open();
+            }
             Transaction = Connection.BeginTransaction();
         }
 
