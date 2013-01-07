@@ -109,7 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
-      <Link>SolutionInfo.cs</Link>
+      <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="MigratorConsole.cs" />
     <Compile Include="Options.cs" />
@@ -148,7 +148,7 @@
       <Link>FluentMigrator.snk</Link>
     </None>
     <None Include="app.config" />
-    <Content Include="app.40.config">
+    <Content Include="app.35.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

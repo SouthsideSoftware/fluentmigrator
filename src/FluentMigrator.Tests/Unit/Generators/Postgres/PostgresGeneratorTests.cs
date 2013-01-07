@@ -145,6 +145,29 @@ namespace FluentMigrator.Tests.Unit.Generators.Postgres
         }
 
         [Test]
+        public void CanDeleteConstraint()
+        {
+            var expression = new DeleteConstraintExpression(ConstraintType.Unique);
+            expression.Constraint.TableName = "ConstraintTable";
+            expression.Constraint.ConstraintName = "Constraint";
+            
+            string sql = generator.Generate(expression);
+            sql.ShouldBe("ALTER TABLE \"public\".\"ConstraintTable\" DROP CONSTRAINT \"Constraint\"");
+        }
+
+        [Test]
+        public void CanDeleteConstraintWithSchema()
+        {
+            var expression = new DeleteConstraintExpression(ConstraintType.Unique);
+            expression.Constraint.TableName = "ConstraintTable";
+            expression.Constraint.SchemaName = "Schema";
+            expression.Constraint.ConstraintName = "Constraint";
+
+            string sql = generator.Generate(expression);
+            sql.ShouldBe("ALTER TABLE \"Schema\".\"ConstraintTable\" DROP CONSTRAINT \"Constraint\"");
+        }
+
+        [Test]
         public void CanDropTable()
         {
             string tableName = "NewTable";
@@ -604,6 +627,32 @@ namespace FluentMigrator.Tests.Unit.Generators.Postgres
         private DeleteTableExpression GetDeleteTableExpression(string tableName)
         {
             return new DeleteTableExpression { TableName = tableName };
+        }
+
+        [Test]
+        public void CanUseSystemMethodCurrentUTCDateTimeAsADefaultValueForAColumn()
+        {
+            const string tableName = "NewTable";
+
+            var columnDefinition = new ColumnDefinition {Name = "NewColumn", Size = 5, Type = DbType.String, DefaultValue = SystemMethods.CurrentUTCDateTime};
+
+            var expression = new CreateColumnExpression {Column = columnDefinition, TableName = tableName};
+
+            string sql = generator.Generate(expression);
+            sql.ShouldBe("ALTER TABLE \"public\".\"NewTable\" ADD \"NewColumn\" varchar(5) NOT NULL DEFAULT (now() at time zone 'UTC')");
+        }
+
+        [Test]
+        public void CanUseSystemMethodCurrentUserAsADefaultValueForAColumn()
+        {
+            const string tableName = "NewTable";
+
+            var columnDefinition = new ColumnDefinition { Name = "NewColumn", Size = 15, Type = DbType.String, DefaultValue = SystemMethods.CurrentUser };
+
+            var expression = new CreateColumnExpression {Column = columnDefinition, TableName = tableName};
+
+            string sql = generator.Generate(expression);
+            sql.ShouldBe("ALTER TABLE \"public\".\"NewTable\" ADD \"NewColumn\" varchar(15) NOT NULL DEFAULT current_user");
         }
 
         private CreateTableExpression GetCreateTableExpression(string tableName)

@@ -198,7 +198,7 @@ namespace FluentMigrator.Tests.Unit.Generators
         {
             //Do Nothing at the moment due to case sensitivity issues with oracle
             OracleQuoter quoter = new OracleQuoter();
-            quoter.Quote("Table\"Name").ShouldBe("Table\"Name");
+            quoter.Quote("Table\"Name").ShouldBe("\"Table\"\"Name\"");
         }
 
         [Test]
@@ -258,6 +258,13 @@ namespace FluentMigrator.Tests.Unit.Generators
         {
             quoter.QuoteValue(true)
                 .ShouldBe("1");
+        }
+
+        [Test]
+        public void ByteArrayIsFormattedWithQuotes()
+        {
+            quoter.QuoteValue(new byte[] { 0, 254, 13, 18, 125, 17 })
+                .ShouldBe("0x00fe0d127d11");
         }
     }
 }
