@@ -73,7 +73,10 @@ namespace FluentMigrator.Runner.Announcers
         public override void Error(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(string.Format("!!! {0}", message));
+            //put this on stdout because we have problems capturing the output in powershell (used by octopus)
+            //if we use 2>&1 to redirect the output of migrator from Poweshell, something happens to that session such that it cannot run scripts anymore
+            //very strange.  Putting this on stdout allows Octopus to capture the output without a problem
+            Console.Out.WriteLine(string.Format("!!! {0}", message));
             Console.ResetColor();
         }
 
